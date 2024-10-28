@@ -6,11 +6,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
 import { websitePages, websites } from "@/db/schema";
-import {
-  WebsiteEdit,
-  WebsiteInsert,
-  WebsitePageUpsert,
-} from "@/@types/dbTypes";
+import { WebsitePageInsert } from "@/@types/dbTypes";
 
 export const getWebsitesPages = async (websiteId: string) => {
   const data = await db
@@ -27,12 +23,26 @@ export const deleteWebsite = async (id: string) => {
   revalidatePath("/[organisation]/websites");
 };
 
-export const upsertWebsitePage = async (data: WebsitePageUpsert) => {
-  await db
-    .insert(websitePages)
-    .values(data)
-    .onConflictDoUpdate({ target: websitePages.id, set: data })
-    .returning();
-  console.log("upsertWebsitePage", data);
+export const insertWebsitePage = async (data: WebsitePageInsert) => {
+  await db.insert(websitePages).values(data).returning();
   revalidatePath("/[organisation]/websites/[website]");
 };
+
+export const updateWebsitePage = async (
+  id: string,
+  data: WebsitePageInsert
+) => {
+  await db
+    .update(websitePages)
+    .set(data)
+    .where(eq(websitePages.id, id))
+    .returning();
+  revalidatePath("/[organisation]/websites/[website]");
+};
+
+
+//delete website page
+export const deleteWebsitePage = async (id: string) => {
+  await db.delete(websitePages).where(eq(websitePages.id, id));
+  revalidatePath("/[organisation]/websites/[website]");
+}

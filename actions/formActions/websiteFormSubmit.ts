@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { addWebsite, editWebsite } from "../dbActions/websiteAction";
 import { WebsiteFormSchema } from "./schemas";
 import path from "path";
-import { WebsiteEdit, WebsitePage } from "@/@types/dbTypes";
+import {
+  WebsiteEdit,
+  WebsiteInsert,
+  WebsitePage,
+  WebsitePageEdit,
+} from "@/@types/dbTypes";
 
 export type FormState = {
   message: string;
@@ -50,7 +55,7 @@ export async function onSubmitAction(
   console.log("Output array", outputArray);
 
   //convert out output array to an array of objects of type WebsitePage
-  const websitePages: WebsitePage[] = outputArray.map((page) => {
+  const websitePages: WebsitePageEdit[] = outputArray.map((page) => {
     return {
       id: page.id,
       websiteId: page.websiteID,
@@ -61,15 +66,14 @@ export async function onSubmitAction(
   if (parsed.data.id) {
     const updateData: WebsiteEdit = {
       ...parsed.data,
-      websitePages,
     };
 
     editWebsite(parsed.data.id, updateData);
   } else {
-    //we don't wnt to pass up the id
     delete parsed.data.id;
+    const newWebsite: WebsiteInsert = parsed.data;
 
-    addWebsite(parsed.data);
+    addWebsite(newWebsite);
     revalidatePath("/[organisation]/websites", "page");
   }
 

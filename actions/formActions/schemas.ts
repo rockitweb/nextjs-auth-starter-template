@@ -1,3 +1,4 @@
+import { url } from "inspector";
 import { z } from "zod";
 
 export const WebsiteFormSchema = z.object({
@@ -21,4 +22,13 @@ export const WebsiteFormSchema = z.object({
       })
     )
     .optional(),
+});
+
+export const auditFormSchema = z.object({
+  websiteId: z.string().optional(),
+  url: z
+    .string()
+    .url()
+    .optional()
+    .transform((e) => (e === "" ? undefined : e)),
 });

@@ -23,9 +23,9 @@ export const WebsitePage: React.FC<WebsitePageProps> = async ({ params }) => {
     getWebsitesPages(website),
   ]);
 
-  if (!websiteResponse || websiteResponse.length === 0) return null;
+  if (!websiteResponse) return null;
 
-  const websiteData = websiteResponse[0];
+  const websiteData = websiteResponse;
 
   return (
     <div className="flex flex-col gap-5 mt-10">

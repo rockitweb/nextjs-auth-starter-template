@@ -13,10 +13,10 @@ import { title } from "process";
 
 const tableDefaults = {
   id: uuid().primaryKey().defaultRandom(),
-  createdAt: timestamp({ withTimezone: true }).defaultNow(),
-  updatedAt: timestamp({ mode: "date", precision: 3 }).$onUpdate(
-    () => new Date()
-  ),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ mode: "date", precision: 3 })
+    .notNull()
+    .$onUpdate(() => new Date()),
 };
 
 export const websites = pgTable(
