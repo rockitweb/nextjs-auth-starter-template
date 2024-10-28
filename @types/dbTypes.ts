@@ -25,6 +25,8 @@ export type WebsitePageEdit = Omit<
 >;
 
 export type Audit = InferSelectModel<typeof audits>;
+export type AuditSelect = { audits: Audit; auditPages: AuditPage };
+export type AuditIssuesSelect = { audits: Audit; auditPages: AuditPage, issues: Issue };
 export type AuditInsert = Omit<Audit, "id" | "createdAt" | "updatedAt">;
 
 export type AuditPage = InferSelectModel<typeof auditPages>;

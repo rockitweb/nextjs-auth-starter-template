@@ -2,8 +2,9 @@
 "use server";
 import {
   AuditInsert,
+  AuditIssuesSelect,
   AuditPageInsert,
-  AuditUpsert,
+  AuditSelect,
   IssueInsert,
 } from "@/@types/dbTypes";
 import { db } from "@/db/drizzle";
@@ -22,13 +23,43 @@ export async function getAudits(websiteId: string) {
   return val;
 }
 
-//get audit by id
-export async function getAudit(auditId: string) {
+/**
+ * Retrieves audit records and includes pages based on the provided audit ID.
+ *
+ * @param {string} auditId - The unique identifier of the audit to retrieve.
+ * @returns {Promise<AuditSelect[]>} A promise that resolves to an array of audit records.
+ *
+ * @example
+ * ```typescript
+ * const auditRecords = await getAudit("12345");
+ * console.log(auditRecords);
+ * ```
+ */
+export async function getAudit(auditId: string): Promise<AuditSelect[]> {
   console.log("auditId", auditId);
+  const val: AuditSelect[] = await db
+    .select()
+    .from(audits)
+    .innerJoin(auditPages, eq(auditPages.auditId, audits.id))
+    .where(eq(audits.id, auditId));
+
+  return val;
+}
+
+/**
+ * Retrieves audit issues based on the provided audit ID.
+ *
+ * @param auditId - The unique identifier of the audit.
+ * @returns A promise that resolves to the audit issues.
+ */
+export async function getAuditIssues(
+  auditId: string
+): Promise<AuditIssuesSelect[]> {
   const val = await db
     .select()
     .from(audits)
     .innerJoin(auditPages, eq(auditPages.auditId, audits.id))
+    .innerJoin(issues, eq(issues.auditPageId, auditPages.id))
     .where(eq(audits.id, auditId));
 
   return val;
